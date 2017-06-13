@@ -1,0 +1,54 @@
+group 'blue.happening.unity'
+version '0.0.1'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+compileJava {
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
+}
+
+sourceSets {
+    main {
+        resources {
+            exclude '**/*'
+        }
+    }
+}
+
+task buildPlugin(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Plugin Unity Plugin',
+                'Implementation-Version': version,
+                'Plugin-Class': 'blue.happening.unity.Plugin'
+    }
+    baseName = project.name
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude ("src/main/resources")
+    with jar
+}
+
+repositories {
+    jcenter()
+
+    maven {
+        url "s3://happening-sdk.s3.eu-central-1.amazonaws.com/releases"
+        credentials(AwsCredentials) {
+            accessKey AWS_ACCESS_KEY
+            secretKey AWS_SECRET_KEY
+        }
+    }
+}
+
+dependencies {
+    compile('blue.happening.service:sdk:0.0.2@jar')
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
