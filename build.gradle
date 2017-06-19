@@ -1,31 +1,29 @@
-group 'blue.happening.unity'
-version '0.0.1'
+group "blue.happening.unity"
+version "0.0.1"
 
-apply plugin: 'java'
-apply plugin: 'idea'
+apply plugin: "java"
 
 compileJava {
-    sourceCompatibility = '1.7'
-    targetCompatibility = '1.7'
+    sourceCompatibility = "1.7"
+    targetCompatibility = "1.7"
 }
 
 sourceSets {
     main {
         resources {
-            exclude '**/*'
+            exclude "**/*"
         }
     }
 }
 
 task buildPlugin(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': 'Plugin Unity Plugin',
-                'Implementation-Version': version,
-                'Plugin-Class': 'blue.happening.unity.Plugin'
+        attributes "Implementation-Title": "Happening Unity Plugin",
+                "Implementation-Version": version,
+                "Plugin-Class": "blue.happening.unity.Main"
     }
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    exclude ("src/main/resources")
     with jar
 }
 
@@ -42,13 +40,6 @@ repositories {
 }
 
 dependencies {
-    compile('blue.happening.service:sdk:0.0.2@jar')
-    compileOnly fileTree(dir: 'libs', include: '*.jar')
-}
-
-idea {
-    module {
-        downloadJavadoc = true
-        downloadSources = true
-    }
+    compile("blue.happening.service:sdk:0.0.2@jar") { changing = true }
+    compileOnly fileTree(dir: "libs", include: "*.jar")
 }
