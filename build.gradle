@@ -40,6 +40,6 @@ repositories {
 }
 
 dependencies {
-    compile("blue.happening.service:sdk:0.0.2@jar") { changing = true }
+    compile("blue.happening.service:sdk:0.0.3@jar") { changing = true }
     compileOnly fileTree(dir: "libs", include: "*.jar")
 }

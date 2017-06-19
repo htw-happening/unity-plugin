@@ -49,7 +49,7 @@ public class HappeningPlugin {
     }
 
     public void Toast(String msg) {
-        Happening.CallStatic("makeToast", msg);
+        //Happening.CallStatic("makeToast", msg);
     }
 
 }
