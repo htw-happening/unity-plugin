@@ -10,59 +10,36 @@ public class HappeningPlugin {
         Happening = new AndroidJavaClass("blue.happening.unity.Main");
     }
 
-	private string getDevicesJSON() {
-		return Happening.CallStatic<string>("getDevices");
+	private string getClientsJSON() {
+		return Happening.CallStatic<string>("getClients");
 	}
 
-	public Devices getDevices() {
-		string json = getDevicesJSON();
-		Toast(json);
-		return JsonUtility.FromJson<Devices>(json);
+	public HappeningClients getClients() {
+		string json = getClientsJSON();
+		return JsonUtility.FromJson<HappeningClients>(json);
 	}
 
-	public void sendData(String id, String data) {
-		Package pkg = new Package(id, data);
+	public void sendData(HappeningClients.HappeningClient client, String data) {
+		Package pkg = new Package(client, data);
 		string json = JsonUtility.ToJson(pkg);
-		Toast(id + " | " + data);
 		Happening.CallStatic("sendData", json);
 	}
 
-    public void onClientAdded(String client) {
-        Toast("onClientAdded");
-    }
-
-    public void onClientUpdated(String client) {
-        Toast("onClientUpdated");
-    }
-
-    public void onClientRemoved(String client) {
-        Toast("onClientRemoved");
-    }
-
-    public void onParcelQueued(String client) {
-        Toast("onParcelQueued");
-    }
-
-    public void onMessageReceived(String json) {
-		Package pkg = JsonUtility.FromJson<Package>(json);
-		Toast("onMessageReceived: " + pkg.data + " from " + pkg.id);
-    }
-
     public void Toast(String msg) {
-        //Happening.CallStatic("makeToast", msg);
+        Happening.CallStatic("makeToast", msg);
     }
 
 }
 
 [System.Serializable]
-public struct Devices {
+public struct HappeningClients {
 
-    public List<Device> devices;
+	public List<HappeningClient> clients;
 
     [System.Serializable]
-    public struct Device {
-        public string id;
-        public string name;
+	public struct HappeningClient {
+		public string uuid;
+		public string name;
     }
 
 }
@@ -70,11 +47,11 @@ public struct Devices {
 [System.Serializable]
 public struct Package {
 
-	public string id;
+	public HappeningClients.HappeningClient source;
 	public string data;
 
-	public Package(string id, string data) {
-		this.id = id;
+	public Package(HappeningClients.HappeningClient source, string data) {
+		this.source = source;
 		this.data = data;
 	}
 }
