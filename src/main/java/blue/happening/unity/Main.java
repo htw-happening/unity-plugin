@@ -14,15 +14,9 @@ import java.util.List;
 
 public class Main extends UnityPlayerActivity {
 
-    private static Happening happening;
-    private static Callback callback;
+    private static Happening happening = new Happening();
+    private static Callback callback = new Callback();
     private static Context context;
-
-    public Main() {
-        happening = new Happening();
-        callback = new Callback();
-        context = MyApplication.getContext();
-    }
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -38,21 +32,18 @@ public class Main extends UnityPlayerActivity {
     }
 
     /**
-     * Get all available devices.
-     * @return JSON string: {'id': x, 'name': x}
+     * Get available devices.
+     * @return JSON String: {'clients': [...]}
      */
-    public static String getDevices() {
-        List<HappeningClient> devices = happening.getDevices();
+    public static String getClients() {
+        List<HappeningClient> clients = happening.getClients();
         JSONObject res = new JSONObject();
         try {
             JSONArray arr = new JSONArray();
-            for (HappeningClient device : devices) {
-                JSONObject obj = new JSONObject();
-                obj.put("id", device.getClientId());
-                obj.put("name", device.getClientName());
-                arr.put(obj);
+            for (HappeningClient client : clients) {
+                arr.put(clientToJson(client));
             }
-            res.put("devices", arr);
+            res.put("clients", arr);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -61,20 +52,50 @@ public class Main extends UnityPlayerActivity {
 
     /**
      * Send data to a device.
-     * @param json JSON string: {'id': x, 'data': x}
+     * @param json JSON String: {'source': x, 'data': x}
      */
     public static void sendData(String json) {
-        String id, data;
-        JSONObject res = new JSONObject();
+        String source, data;
         try {
-            res.getJSONObject(json);
-            id = res.getString("id");
+            JSONObject res = new JSONObject(json);
+            source = res.getString("source");
             data = res.getString("data");
-            makeToast("JAVA: " + id + " | " + data);
-            happening.sendDataTo(id, data.getBytes());
+            HappeningClient client = clientFromJson(source);
+            if (client != null) {
+                happening.sendMessage(data.getBytes(), client);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Get json object of a client
+     * @param client Happening Client
+     * @return JSONObject: {'uuid': x, 'name': x}
+     */
+    static JSONObject clientToJson(HappeningClient client) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("uuid", client.getUuid());
+            obj.put("name", client.getName());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    static HappeningClient clientFromJson(String json) {
+        String uuid, name;
+        try {
+            JSONObject obj = new JSONObject(json);
+            uuid = obj.getString("uuid");
+            name = obj.getString("name");
+            return new HappeningClient(uuid, name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void makeToast(String msg) {

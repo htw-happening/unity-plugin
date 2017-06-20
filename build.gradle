@@ -27,6 +27,12 @@ task buildPlugin(type: Jar) {
     with jar
 }
 
+task copyPlugin(type: Copy) {
+    from("build/libs/")
+    from("src/main/resources/")
+    into("/Users/danielreissner/Documents/Unity/HappeningUnity/Assets/Plugins/Android")
+}
+
 repositories {
     jcenter()
 
@@ -40,6 +46,6 @@ repositories {
 }
 
 dependencies {
-    compile("blue.happening.service:sdk:0.0.3@jar") { changing = true }
+    compile("blue.happening.service:sdk:0.0.4@jar") { changing = true }
     compileOnly fileTree(dir: "libs", include: "*.jar")
 }

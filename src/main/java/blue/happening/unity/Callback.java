@@ -1,49 +1,41 @@
 package blue.happening.unity;
 
+import blue.happening.HappeningClient;
 import blue.happening.sdk.HappeningCallback;
 import com.unity3d.player.UnityPlayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static blue.happening.unity.Main.makeToast;
+import static blue.happening.unity.Main.clientToJson;
 
 public class Callback implements HappeningCallback {
 
     @Override
-    public void onClientAdded(String s) {
-        UnityPlayer.UnitySendMessage("Main", "onClientAdded", s);
+    public void onClientAdded(HappeningClient client) {
+        UnityPlayer.UnitySendMessage("Happening", "onClientAdded", clientToJson(client).toString());
     }
 
     @Override
-    public void onClientUpdated(String s) {
-        UnityPlayer.UnitySendMessage("Main", "onClientUpdated", s);
+    public void onClientUpdated(HappeningClient client) {
+        UnityPlayer.UnitySendMessage("Happening", "onClientUpdated", clientToJson(client).toString());
     }
 
     @Override
-    public void onClientRemoved(String s) {
-        UnityPlayer.UnitySendMessage("Main", "onClientRemoved", s);
+    public void onClientRemoved(HappeningClient client) {
+        UnityPlayer.UnitySendMessage("Happening", "onClientRemoved", clientToJson(client).toString());
     }
 
     @Override
-    public void onParcelQueued(long l) {
-        UnityPlayer.UnitySendMessage("Main", "onParcelQueued", String.valueOf(l));
-    }
-
-    @Override
-    public void onMessageReceived(byte[] bytes, int id) {
-        try {
-            makeToast("Callback: " + id + " | " + new JSONObject(new String(bytes)).toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public void onMessageReceived(byte[] bytes, HappeningClient source) {
+        System.out.println("Callback: onMessageReceived");
         JSONObject res = new JSONObject();
         try {
-            res.put("id", id);
+            res.put("source", clientToJson(source));
             res.put("data", new String(bytes));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        UnityPlayer.UnitySendMessage("Main", "onMessageReceived", res.toString());
+        UnityPlayer.UnitySendMessage("Happening", "onMessageReceived", res.toString());
     }
 
 }
