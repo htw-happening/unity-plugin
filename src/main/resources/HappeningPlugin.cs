@@ -25,7 +25,7 @@ public class HappeningPlugin {
 		Happening.CallStatic("sendData", json);
 	}
 
-    public void Toast(String msg) {
+    public void toast(String msg) {
         Happening.CallStatic("makeToast", msg);
     }
 

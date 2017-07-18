@@ -1,10 +1,12 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Timers;
 
 public class HappeningPluginExample : MonoBehaviour {
 
-	HappeningPlugin Plugin;
+	HappeningPlugin plugin;
+	Timer timer;
 
 	void Awake() {
 	}
@@ -13,8 +15,9 @@ public class HappeningPluginExample : MonoBehaviour {
 	}
 
 	void Start() {
-		Plugin = new HappeningPlugin();
+		plugin = new HappeningPlugin();
 		sendBroadcastMessage();
+		InvokeRepeating("sendBroadcastMessage", 0, 2.5f);
 	}
 
 	void Update() {
@@ -22,10 +25,10 @@ public class HappeningPluginExample : MonoBehaviour {
 
 	public void sendBroadcastMessage() {
 		print("Broadcasting...");
-		HappeningClients clients = Plugin.getClients();
+		HappeningClients clients = plugin.getClients();
 		foreach (HappeningClients.HappeningClient client in clients.clients) {
 			print(client.uuid);
-			Plugin.sendData(client, "HALLO!");
+			plugin.sendData(client, "HALLO!");
 		}
 	}
 
@@ -46,14 +49,9 @@ public class HappeningPluginExample : MonoBehaviour {
 		print("onClientRemoved: " + client);
 	}
 
-	void onParcelQueued(String json) {
-		HappeningClients.HappeningClient client = JsonUtility.FromJson<HappeningClients.HappeningClient>(json);
-		print("onParcelQueued: " + client);
-	}
-
 	void onMessageReceived(String json) {
 		Package pkg = JsonUtility.FromJson<Package>(json);
-		Plugin.Toast(pkg.data + " from " + pkg.source.uuid);
+		plugin.toast(pkg.data + " from " + pkg.source.uuid);
 	}
 
 }
