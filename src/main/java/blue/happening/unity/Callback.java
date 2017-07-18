@@ -27,7 +27,6 @@ public class Callback implements HappeningCallback {
 
     @Override
     public void onMessageReceived(byte[] bytes, HappeningClient source) {
-        System.out.println("Callback: onMessageReceived");
         JSONObject res = new JSONObject();
         try {
             res.put("source", clientToJson(source));
@@ -36,6 +35,11 @@ public class Callback implements HappeningCallback {
             e.printStackTrace();
         }
         UnityPlayer.UnitySendMessage("Happening", "onMessageReceived", res.toString());
+    }
+
+    @Override
+    public void onMessageLogged(int type, int action) {
+        // Callback to log mesh messages
     }
 
 }

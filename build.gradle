@@ -1,5 +1,5 @@
 group "blue.happening.unity"
-version "0.0.1"
+version "0.2.0"
 
 apply plugin: "java"
 
@@ -46,6 +46,6 @@ repositories {
 }
 
 dependencies {
-    compile("blue.happening.service:sdk:0.0.4@jar") { changing = true }
+    compile("blue.happening.service:sdk:0.0.6@jar") { changing = true }
     compileOnly fileTree(dir: "libs", include: "*.jar")
 }
